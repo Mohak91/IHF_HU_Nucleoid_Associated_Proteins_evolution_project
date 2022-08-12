@@ -1,6 +1,7 @@
 #importing libraries
 
 import pandas as pd
+import os
 
 #reading csv file input
 
@@ -22,6 +23,8 @@ WRITE=["/Users/User/Documents/ihf_hu_project/ihf_hu_project/results/HUA_1030198_
        "/Users/User/Documents/ihf_hu_project/ihf_hu_project/results/IHFB_1030197_bacteria_nr_species.fasta"]
 
 MERGED_FASTA="/Users/User/Documents/ihf_hu_project/ihf_hu_project/results/hua_hub_ihfa_ihfb_merged_bacteria_nr_species.fasta"
+
+FAMSA_OUTPUT="/Users/User/Documents/ihf_hu_project/ihf_hu_project/results/hua_hub_ihfa_ihfb_merged_bacteria_nr_species_msa.fasta"
 
 __prog_name__ = 'prepare_files_for_msa.py'
 __prog_desc__ = 'Takes a csv, fasta and output file name as input and filters non-redundant species level protein sequences in a fasta format.'
@@ -49,6 +52,7 @@ class PrepareForMsa(object):
             filtered_bacterial_fasta_dataframe = self.remove_species_level_redundancy(filtered_bacterial_fasta_dictionary,prefix)
             self.write_filtered_fasta_file(filtered_bacterial_fasta_dataframe,write)
         self.write_merged_filtered_fasta_file(WRITE,MERGED_FASTA)
+        self.run_famsa(MERGED_FASTA,FAMSA_OUTPUT)
     
     def make_protid_list(self,filename_csv):
         csv_bacteria = pd.read_csv(filename_csv)
@@ -108,7 +112,11 @@ class PrepareForMsa(object):
                 fh.write(fr.read())
                 fr.seek(0)
                 fr.close()
-
+                
+    def run_famsa(self,MERGED_FASTA,FAMSA_OUTPUT):
+        famsa = "famsa %s %s"%(MERGED_FASTA,FAMSA_OUTPUT)"
+        os.system(famsa)
+      
 if __name__=="__main__":
     
     print(__prog_name__ + ' v' + __version__ + ': ' + __prog_desc__)
